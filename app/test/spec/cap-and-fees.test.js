@@ -15,7 +15,7 @@ const capCases = [
   { id: "TC-40", name: "fee is not limited by the cap", station: "X01", ...d("12:00:00", "12:20:00"), prior: 30000, total: 15000 },
   { id: "TC-42", name: "ride across midnight belongs to its pickup day", from: at(16, "23:40:00"), to: at(17, "00:20:00"), prior: 29000, total: 1000 },
   { id: "TC-43", name: "new day, new cap", from: at(17, "08:00:00"), to: at(17, "08:30:00"), prior: 30000, priorAt: at(16, "12:00:00"), total: 2500 },
-  { id: "TC-45", name: "day is Kyiv's, not UTC (17.09 00:30 +03:00)", from: "2026-09-17T00:30:00+03:00", to: "2026-09-17T00:50:00+03:00", prior: 29500, total: 500 },
+  { id: "TC-45", name: "day is Kyiv's, not UTC (prior 17.09 00:05 +03:00 = 16.09 UTC)", from: at(17, "03:30:00"), to: at(17, "03:50:00"), prior: 29500, priorAt: at(17, "00:05:00"), total: 500 },
 ];
 
 for (const c of capCases) {
