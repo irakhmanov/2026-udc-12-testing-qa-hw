@@ -30,22 +30,39 @@
 
 | # | Запах | Тест (файл:рядок › назва) | Чому це проблема | AI знайшов? |
 |---|---|---|---|---|
-| 1 | Тест перевіряє мок (тестує сам себе) | `app/test/unit/tariff.test.js:82` › `a 45-minute classic ride costs 50 UAH` | `mock.fn` повертає готовий результат (`:83`), а `assert` перевіряє саме його (`:85-86`); `quote` не викликається. Тест зелений, навіть якщо `quote` видалити | _заповнити_ |
-| 2 | Слабка перевірка («щось повернулося») | `app/test/unit/tariff.test.js:9` › `quote returns an itemised price` | `total >= 0`, `Array.isArray`, `typeof minutes` (`:17-20`) проходять майже для будь-якого результату, зокрема для хибних цін | _заповнити_ |
-| 3 | Слабка перевірка: нерівність замість значення | `app/test/unit/tariff.test.js:45` › `subscription on a long e-bike ride` | `total < timeCharge` (`:48`) проходить для знижки в 1 копійку і для знижки в 100 %; точне значення за T4 — 6400 (`tariffs.md:76-77`) | _заповнити_ |
-| 4 | Слабка перевірка: нерівність замість значення | `app/test/unit/tariff.test.js:58` › `night rides get 30 % off` | `total < timeCharge` (`:64`) не відрізняє знижку 30 % від будь-якої іншої; потрібно 1750 | _заповнити_ |
-| 5 | Слабка перевірка: верхня межа замість значення | `app/test/unit/tariff.test.js:72` › `the daily cap limits the time charge` | `last.total <= DAY_CAP` (`:79`) проходить, якщо третя поїздка безкоштовна, або ліміт не діє (3 × 80 хв дають рівно 12000 + 12000 + 6000); потрібно `6000` | _заповнити_ |
-| 6 | Логіка коду в тесті | `app/test/unit/tariff.test.js:31` › `e-bikes are billed at the e-bike rate` | очікуване обчислюється тим самим алгоритмом і константами з коду (`Math.ceil(minutes / BLOCK_MINUTES) * RATES.ebike`, `:33`): спільна помилка в коді й тесті лишиться непоміченою (так було з BUG-1) | _заповнити_ |
-| 7 | Недостатня перевірка результату | `app/test/unit/tariff.test.js:67` › `a bike kept over a day and left outside the zone pays both fees` | перевіряється лише `fees.length === 2` (`:70`), суми й `total` — ні | _заповнити_ |
-| 8 | Слабка перевірка: нерівність замість значення | `app/test/unit/day-cap.test.js:5` › `charges recorded for a day reduce what is left of the cap` | `remaining(...) < DAY_CAP` (`:8`); після запису 12000 має лишитися рівно 18000 | _заповнити_ |
-| 9 | Слабка перевірка рядка чека | `app/test/unit/receipt-format.test.js:11` › `a receipt has a line for every item` | перевіряється кількість рядків і `includes("185,00")` (`:19-20`), а не вміст, порядок і мінус перед знижкою (T9, `tariffs.md:134-135`) | _заповнити_ |
-| 10 | Слабка перевірка відповіді API | `app/test/unit/server.test.js:49` › `POST /api/quote answers 400 to a body that is not JSON` та `:38` › `…returns the quote and the receipt` | `ok(JSON.parse(res.body).error)` (`:52`) приймає будь-яке повідомлення; `endsWith("50,00 грн")` (`:46`) не перевіряє решту чека | _заповнити_ |
+| 1 | Тест перевіряє мок (тестує сам себе) | `app/test/unit/tariff.test.js:82` › `a 45-minute classic ride costs 50 UAH` | `mock.fn` повертає готовий результат (`:83`), а `assert` перевіряє саме його (`:85-86`); `quote` не викликається. Тест зелений, навіть якщо `quote` видалити | так (п. 1) |
+| 2 | Слабка перевірка («щось повернулося») | `app/test/unit/tariff.test.js:9` › `quote returns an itemised price` | `total >= 0`, `Array.isArray`, `typeof minutes` (`:17-20`) проходять майже для будь-якого результату, зокрема для хибних цін | так (п. 3) |
+| 3 | Слабка перевірка: нерівність замість значення | `app/test/unit/tariff.test.js:45` › `subscription on a long e-bike ride` | `total < timeCharge` (`:48`) проходить для знижки в 1 копійку і для знижки в 100 %; точне значення за T4 — 6400 (`tariffs.md:76-77`) | так (п. 8) |
+| 4 | Слабка перевірка: нерівність замість значення | `app/test/unit/tariff.test.js:58` › `night rides get 30 % off` | `total < timeCharge` (`:64`) не відрізняє знижку 30 % від будь-якої іншої; потрібно 1750 | так (п. 9) |
+| 5 | Слабка перевірка: верхня межа замість значення | `app/test/unit/tariff.test.js:72` › `the daily cap limits the time charge` | `last.total <= DAY_CAP` (`:79`) проходить, якщо третя поїздка безкоштовна, або ліміт не діє (3 × 80 хв дають рівно 12000 + 12000 + 6000); потрібно `6000` | так (п. 2) |
+| 6 | Логіка коду в тесті | `app/test/unit/tariff.test.js:31` › `e-bikes are billed at the e-bike rate` | очікуване обчислюється тим самим алгоритмом і константами з коду (`Math.ceil(minutes / BLOCK_MINUTES) * RATES.ebike`, `:33`): спільна помилка в коді й тесті лишиться непоміченою (так було з BUG-1) | так (п. 6) |
+| 7 | Недостатня перевірка результату | `app/test/unit/tariff.test.js:67` › `a bike kept over a day and left outside the zone pays both fees` | перевіряється лише `fees.length === 2` (`:70`), суми й `total` — ні | так (п. 10) |
+| 8 | Слабка перевірка: нерівність замість значення | `app/test/unit/day-cap.test.js:5` › `charges recorded for a day reduce what is left of the cap` | `remaining(...) < DAY_CAP` (`:8`); після запису 12000 має лишитися рівно 18000 | так (п. 4) |
+| 9 | Слабка перевірка рядка чека | `app/test/unit/receipt-format.test.js:11` › `a receipt has a line for every item` | перевіряється кількість рядків і `includes("185,00")` (`:19-20`), а не вміст, порядок і мінус перед знижкою (T9, `tariffs.md:134-135`) | так (п. 11) |
+| 10 | Слабка перевірка відповіді API | `app/test/unit/server.test.js:49` › `POST /api/quote answers 400 to a body that is not JSON` та `:38` › `…returns the quote and the receipt` | `ok(JSON.parse(res.body).error)` (`:52`) приймає будь-яке повідомлення; `endsWith("50,00 грн")` (`:46`) не перевіряє решту чека | частково (п. 13: `ok(error)`; `endsWith` не названо) |
+
+| 11 | Дані, що не розрізняють реалізації | `app/test/unit/day-cap.test.js:11` › `the day of a ride is the date of its pickup` | вхід `2026-09-16T08:00:00Z` дає ту саму дату і за UTC, і за Києвом, тож тест зелений і з дефектом BUG-5; потрібен вхід біля півночі (`2026-09-15T22:30:00Z` → `2026-09-16`). **Я це пропустив, додано після відповіді AI** | так (п. 5) |
+| 12 | Неспецифічна перевірка винятку | `app/test/unit/tariff.test.js:89` › `a return before the pickup is rejected` | `assert.throws(…, QuoteError)` (`:89-91`) приймає будь-яку `QuoteError`, зокрема від некоректної станції. **Додано після відповіді AI** | так (п. 14) |
 
 Поза `app/test/unit/`, але пов'язане: `app/test/integration/receipt.test.js` бере випадкові
 поїздки з `app/test/helpers/factory.js` (`Math.random`) і дублює формулу кількості блоків —
 джерело нестабільного тесту; його розбір — у Task D.
 
-Що AI назвав запахом, а я не погоджуюся, — і чому: _заповнити після `ai-runs/c-smells.md`_
+Що AI назвав запахом, а я не погоджуюся, — і чому:
+
+- **п. 15 «Mystery Guest»** (`tariff.test.js:51`, `server.test.js:38`). Mystery Guest — це прихований зовнішній
+  ресурс (файл, БД), з якого береться очікуване. Станції `S01`, `X01` — літерали в самому
+  тесті, їх видно; вони ще й частина специфікації (додаток А, `tariffs.md:162-176`). Це не
+  запах, а потрібна прив'язка до предметної області. Повторення дати `"2026-09-16T07:00:00Z"`
+  — слабка «магічна константа», але шкоди не завдає.
+- **п. 12** (`server.test.js:29`, два ендпоінти в одному тесті). Обидва — тривіальні GET
+  без стану; розділення нічого не дало б. Слабкість там інша — не перевіряється тіло сторінки.
+- **п. 16** (`receipt-format.test.js:5`, три значення в одному тесті). Це одна функція `formatUah`
+  з трьома вхідними значеннями, і вони читаються разом. Недолік — відсутність меж `0` і `5` (їх
+  вже закрито spec-тестами TC-61), а не «кілька випадків».
+- **п. 7** (`tariff.test.js:38`, Eager Test) — з застереженням: два правила в одному тесті
+  справді змішані, але це наслідок моєї правки з Task B (таблиця «класичний → 0, e-bike → 6400»),
+  а не запах початкового коду.
 
 ## 3. AI посилює тести
 
